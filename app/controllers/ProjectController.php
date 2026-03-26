@@ -25,7 +25,7 @@ final class ProjectController
     public function index(): void
     {
         $fiscalYearId = (int) ($_GET['fiscal_year_id'] ?? 0);
-        $projects = $fiscalYearId > 0 ? $this->projectModel->allByFiscalYear($fiscalYearId) : [];
+        $projects = $fiscalYearId > 0 ? $this->projectModel->allByFiscalYear($fiscalYearId) : $this->projectModel->all();
         $plans = (new Plan())->all();
 
         Response::view('projects/index', [
@@ -33,15 +33,14 @@ final class ProjectController
             'projects' => $projects,
             'fiscalYearId' => $fiscalYearId,
             'plans' => $plans,
+            'canManage' => Auth::hasRole(['ADMIN']),
         ]);
     }
 
     public function store(): void
     {
         $input = [
-            'fiscal_year_id' => (int) ($_POST['fiscal_year_id'] ?? 0),
             'plan_id' => (int) ($_POST['plan_id'] ?? 0),
-            'code' => trim((string) ($_POST['code'] ?? '')),
             'name' => trim((string) ($_POST['name'] ?? '')),
             'description' => trim((string) ($_POST['description'] ?? '')),
             'allocated_budget' => (float) ($_POST['allocated_budget'] ?? 0),
@@ -50,15 +49,24 @@ final class ProjectController
             'created_by' => Auth::user()['id'],
         ];
 
-        $errors = Validator::required($input, ['fiscal_year_id', 'plan_id', 'code', 'name']);
+        $errors = Validator::required($input, ['plan_id', 'name']);
         if ($errors !== []) {
             Response::json(['errors' => $errors], 422);
         }
 
+        $plan = (new Plan())->findWithFiscalYear((int) $input['plan_id']);
+        if (!$plan) {
+            Response::json(['errors' => ['plan_id' => 'Plan not found']], 422);
+        }
+
+        $input['fiscal_year_id'] = (int) $plan['fiscal_year_id'];
+        $projectCode = $this->projectModel->nextCodeForPlan((int) $input['plan_id'], (int) $plan['fiscal_year'], (string) $plan['code']);
+        $input['code'] = $projectCode;
+
         $projectId = $this->projectModel->create($input);
         $this->projectService->refreshProjectStatus($projectId);
 
-        Response::json(['message' => 'Project created', 'project_id' => $projectId]);
+        Response::redirect('/projects?fiscal_year_id=' . $input['fiscal_year_id'] . '&created_code=' . urlencode($projectCode));
     }
 
     public function update(string $id): void
@@ -78,10 +86,33 @@ final class ProjectController
             Response::json(['errors' => $errors], 422);
         }
 
+        $plan = (new Plan())->findWithFiscalYear((int) $input['plan_id']);
+        if (!$plan) {
+            Response::json(['errors' => ['plan_id' => 'Plan not found']], 422);
+        }
+
+        $input['fiscal_year_id'] = (int) $plan['fiscal_year_id'];
+
         $updated = $this->projectModel->update($projectId, $input);
         $this->projectService->refreshProjectStatus($projectId);
 
         Response::json(['updated' => $updated]);
+    }
+
+    public function show(string $id): void
+    {
+        $project = $this->projectModel->find((int) $id);
+        if (!$project) {
+            Response::json(['error' => 'Project not found'], 404);
+            return;
+        }
+
+        $plan = (new Plan())->find($project['plan_id']);
+        
+        Response::json([
+            'project' => $project,
+            'plan' => $plan,
+        ]);
     }
 
     public function destroy(string $id): void

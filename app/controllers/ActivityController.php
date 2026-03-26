@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Helpers\Auth;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Models\Activity;
@@ -24,11 +25,15 @@ final class ActivityController
     {
         $projectId = (int) ($_GET['project_id'] ?? 0);
         $activities = $projectId > 0 ? $this->activityModel->listByProject($projectId) : [];
+        $canUpdate = Auth::hasRole(['ADMIN', 'STAFF']);
+        $canDelete = Auth::hasRole(['ADMIN']);
 
         Response::view('activities/index', [
             'title' => 'Activities',
             'activities' => $activities,
             'projectId' => $projectId,
+            'canUpdate' => $canUpdate,
+            'canDelete' => $canDelete,
         ]);
     }
 

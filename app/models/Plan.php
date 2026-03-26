@@ -21,6 +21,30 @@ final class Plan extends BaseModel
         return $stmt->fetchAll();
     }
 
+    public function find(int $id): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM plans WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+
+        return $row ?: null;
+    }
+
+    public function findWithFiscalYear(int $id): ?array
+    {
+        $sql = 'SELECT p.*, fy.fiscal_year
+                FROM plans p
+                INNER JOIN fiscal_years fy ON fy.id = p.fiscal_year_id
+                WHERE p.id = :id
+                LIMIT 1';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+
+        return $row ?: null;
+    }
+
     public function fiscalYears(): array
     {
         $stmt = $this->db->prepare('SELECT id, fiscal_year, start_date, end_date, is_active
@@ -86,6 +110,31 @@ final class Plan extends BaseModel
                 throw $exception;
             }
         }
+    }
+
+    public function update(int $id, array $payload): bool
+    {
+        $sql = 'UPDATE plans
+                SET name = :name,
+                    description = :description,
+                    owner_department = :owner_department
+                WHERE id = :id';
+
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([
+            'id' => $id,
+            'name' => $payload['name'],
+            'description' => $payload['description'] ?? null,
+            'owner_department' => $payload['owner_department'] ?? null,
+        ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->db->prepare('DELETE FROM plans WHERE id = :id');
+
+        return $stmt->execute(['id' => $id]);
     }
 
     private function codeToIndex(string $code): int

@@ -19,7 +19,7 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3><?= $isEdit ? 'Edit Monthly Report' : 'Submit Monthly Report' ?></h3>
+    <h3><?= $isEdit ? 'แก้ไขรายงานประจำเดือน' : 'ส่งรายงานประจำเดือน' ?></h3>
 </div>
 
 <div class="card">
@@ -27,7 +27,7 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
         <form method="POST" action="<?= htmlspecialchars($actionUrl, ENT_QUOTES, 'UTF-8') ?>" enctype="multipart/form-data" class="row g-3">
             <div class="col-md-4">
                 <select class="form-select" name="project_id" id="project_select" required <?= $isEdit ? 'disabled' : '' ?>>
-                    <option value="">Select Project</option>
+                    <option value="">เลือกโครงการ</option>
                     <?php foreach ($projects ?? [] as $project): ?>
                         <option value="<?= (int) $project['id'] ?>" <?= $projectId === (int) $project['id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($project['fiscal_year_name'], ENT_QUOTES, 'UTF-8') ?> - 
@@ -40,40 +40,40 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
                     <input type="hidden" name="project_id" value="<?= htmlspecialchars((string) $projectId, ENT_QUOTES, 'UTF-8') ?>">
                 <?php endif; ?>
             </div>
-            <div class="col-md-2"><input class="form-control" type="number" min="1" max="12" name="month" placeholder="Month" value="<?= htmlspecialchars((string) ($report['month'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required <?= $isEdit ? 'readonly' : '' ?>></div>
-            <div class="col-md-2"><input class="form-control" type="number" name="year" placeholder="Year" value="<?= htmlspecialchars((string) ($report['year'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required <?= $isEdit ? 'readonly' : '' ?>></div>
+            <div class="col-md-2"><input class="form-control" type="number" min="1" max="12" name="month" placeholder="เดือน" value="<?= htmlspecialchars((string) ($report['month'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required <?= $isEdit ? 'readonly' : '' ?>></div>
+            <div class="col-md-2"><input class="form-control" type="number" name="year" placeholder="ปี" value="<?= htmlspecialchars((string) ($report['year'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required <?= $isEdit ? 'readonly' : '' ?>></div>
 
             <?php if (!$isEdit && $projectId === 0): ?>
                 <div class="col-12">
                     <div class="alert alert-info mb-0">
-                        Select a project to display its KPIs and activities for reporting.
+                        โปรดเลือกโครงการเพื่อแสดงตัวชี้วัดและกิจกรรมสำหรับรายงาน
                     </div>
                 </div>
             <?php endif; ?>
 
             <div class="col-12">
                 <div class="alert alert-warning mb-0">
-                    Budget reporting is now handled from the separate <strong>Budget Report</strong> menu.
+                    การรายงานงบประมาณย้ายไปที่เมนู <strong>รายงานงบประมาณ</strong>
                 </div>
             </div>
 
             <div class="col-12">
-                <h5 class="mb-2">KPI Progress</h5>
+                <h5 class="mb-2">ความก้าวหน้าของ KPI</h5>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm align-middle" id="kpiTable">
                         <thead class="table-light">
                         <tr>
                             <th>KPI</th>
-                            <th>Type</th>
-                            <th>Target</th>
-                            <th>Incremental Value</th>
-                            <th>Text Update</th>
+                            <th>ประเภท</th>
+                            <th>ค่าเป้าหมาย</th>
+                            <th>ค่าความก้าวหน้า</th>
+                            <th>อัปเดตข้อความ</th>
                         </tr>
                         </thead>
                         <tbody>
                         <?php if ($kpis === []): ?>
                             <tr>
-                                <td colspan="5" class="text-center text-muted">No KPI found for this project.</td>
+                                <td colspan="5" class="text-center text-muted">ไม่พบ KPI สำหรับโครงการนี้</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($kpis as $kpi): ?>
@@ -104,7 +104,7 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
                                             type="text"
                                             name="kpi_text_values[]"
                                             value="<?= htmlspecialchars((string) ($progress['text_value'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                                            <?= $kpi['type'] !== 'text' ? 'placeholder="Optional"' : 'placeholder="Text progress"' ?>
+                                            <?= $kpi['type'] !== 'text' ? 'placeholder="ใส่หรือเว้นว่างได้"' : 'placeholder="อัปเดตเป็นข้อความ"' ?>
                                         >
                                     </td>
                                 </tr>
@@ -116,21 +116,21 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
             </div>
 
             <div class="col-12">
-                <h5 class="mb-2">Activity Status Updates</h5>
+                <h5 class="mb-2">อัปเดตสถานะกิจกรรม</h5>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm align-middle" id="activityTable">
                         <thead class="table-light">
                         <tr>
-                            <th>Activity</th>
-                            <th>Status</th>
-                            <th>Progress %</th>
-                            <th>Update Note</th>
+                            <th>กิจกรรม</th>
+                            <th>สถานะ</th>
+                            <th>ความคืบหน้า %</th>
+                            <th>บันทึกอัปเดต</th>
                         </tr>
                         </thead>
                         <tbody>
                         <?php if ($activities === []): ?>
                             <tr>
-                                <td colspan="4" class="text-center text-muted">No activities found for this project.</td>
+                                <td colspan="4" class="text-center text-muted">ไม่พบกิจกรรมสำหรับโครงการนี้</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($activities as $activity): ?>
@@ -143,16 +143,16 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
                                     </td>
                                     <td>
                                         <select class="form-select form-select-sm" name="activity_statuses[]" required>
-                                            <option value="NOT_STARTED" <?= $selectedStatus === 'NOT_STARTED' ? 'selected' : '' ?>>NOT_STARTED</option>
-                                            <option value="IN_PROGRESS" <?= $selectedStatus === 'IN_PROGRESS' ? 'selected' : '' ?>>IN_PROGRESS</option>
-                                            <option value="COMPLETED" <?= $selectedStatus === 'COMPLETED' ? 'selected' : '' ?>>COMPLETED</option>
+                                            <option value="NOT_STARTED" <?= $selectedStatus === 'NOT_STARTED' ? 'selected' : '' ?>>ยังไม่เริ่ม</option>
+                                            <option value="IN_PROGRESS" <?= $selectedStatus === 'IN_PROGRESS' ? 'selected' : '' ?>>กำลังดำเนินการ</option>
+                                            <option value="COMPLETED" <?= $selectedStatus === 'COMPLETED' ? 'selected' : '' ?>>เสร็จสิ้น</option>
                                         </select>
                                     </td>
                                     <td>
                                         <input class="form-control form-control-sm" type="number" min="0" max="100" step="0.01" name="activity_progress_percents[]" value="<?= htmlspecialchars((string) ($update['progress_percent'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                                     </td>
                                     <td>
-                                        <input class="form-control form-control-sm" type="text" name="activity_update_notes[]" value="<?= htmlspecialchars((string) ($update['update_note'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="Optional">
+                                        <input class="form-control form-control-sm" type="text" name="activity_update_notes[]" value="<?= htmlspecialchars((string) ($update['update_note'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="ใส่หรือเว้นว่างได้">
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -162,16 +162,16 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
                 </div>
             </div>
 
-            <div class="col-12"><textarea class="form-control" name="notes" placeholder="Notes"><?= htmlspecialchars((string) ($report['notes'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea></div>
+            <div class="col-12"><textarea class="form-control" name="notes" placeholder="บันทึกเพิ่มเติม"><?= htmlspecialchars((string) ($report['notes'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea></div>
             <div class="col-md-6"><input class="form-control" type="file" name="attachment"></div>
             <div class="col-md-6 d-flex align-items-center">
                 <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox" name="lock_after_submit" id="lock_after_submit" <?= !empty($report['is_locked']) ? 'checked' : '' ?>>
-                    <label class="form-check-label" for="lock_after_submit">Lock after submit</label>
+                    <label class="form-check-label" for="lock_after_submit">ล็อกหลังส่งรายงาน</label>
                 </div>
             </div>
 
-            <div class="col-12"><button class="btn btn-success" type="submit"><?= $isEdit ? 'Update Report' : 'Submit Report' ?></button></div>
+            <div class="col-12"><button class="btn btn-success" type="submit"><?= $isEdit ? 'อัปเดตรายงาน' : 'ส่งรายงาน' ?></button></div>
         </form>
     </div>
 </div>
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!kpiTableBody) return;
         
         if (kpis.length === 0) {
-            kpiTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No KPI found for this project.</td></tr>';
+            kpiTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">ไม่พบ KPI สำหรับโครงการนี้</td></tr>';
             return;
         }
         
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             class="form-control form-control-sm"
                             type="text"
                             name="kpi_text_values[]"
-                            placeholder="${kpi.type !== 'text' ? 'Optional' : 'Text progress'}"
+                            placeholder="${kpi.type !== 'text' ? 'ใส่หรือเว้นว่างได้' : 'อัปเดตเป็นข้อความ'}"
                         >
                     </td>
                 </tr>
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!activityTableBody) return;
         
         if (activities.length === 0) {
-            activityTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No activities found for this project.</td></tr>';
+            activityTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">ไม่พบกิจกรรมสำหรับโครงการนี้</td></tr>';
             return;
         }
         
@@ -267,16 +267,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td>
                         <select class="form-select form-select-sm" name="activity_statuses[]" required>
-                            <option value="NOT_STARTED" ${activity.status === 'NOT_STARTED' ? 'selected' : ''}>NOT_STARTED</option>
-                            <option value="IN_PROGRESS" ${activity.status === 'IN_PROGRESS' ? 'selected' : ''}>IN_PROGRESS</option>
-                            <option value="COMPLETED" ${activity.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
+                            <option value="NOT_STARTED" ${activity.status === 'NOT_STARTED' ? 'selected' : ''}>ยังไม่เริ่ม</option>
+                            <option value="IN_PROGRESS" ${activity.status === 'IN_PROGRESS' ? 'selected' : ''}>กำลังดำเนินการ</option>
+                            <option value="COMPLETED" ${activity.status === 'COMPLETED' ? 'selected' : ''}>เสร็จสิ้น</option>
                         </select>
                     </td>
                     <td>
                         <input class="form-control form-control-sm" type="number" min="0" max="100" step="0.01" name="activity_progress_percents[]" value="">
                     </td>
                     <td>
-                        <input class="form-control form-control-sm" type="text" name="activity_update_notes[]" placeholder="Optional">
+                        <input class="form-control form-control-sm" type="text" name="activity_update_notes[]" placeholder="ใส่หรือเว้นว่างได้">
                     </td>
                 </tr>
             `;
@@ -286,10 +286,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function clearTables() {
         if (kpiTableBody) {
-            kpiTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Select a project to display its KPIs.</td></tr>';
+            kpiTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">เลือกโครงการเพื่อแสดง KPI</td></tr>';
         }
         if (activityTableBody) {
-            activityTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Select a project to display its activities.</td></tr>';
+            activityTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">เลือกโครงการเพื่อแสดงกิจกรรม</td></tr>';
         }
     }
 });

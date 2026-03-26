@@ -1,24 +1,24 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Executive Dashboard</h3>
+    <h3>แดชบอร์ดผู้บริหาร</h3>
 </div>
 
 <div class="card mb-3">
     <div class="card-body">
-        <h5>KPI Achievement</h5>
+        <h5>ความสำเร็จของ KPI</h5>
         <div class="display-6"><?= number_format((float) $summary['kpi_achievement_percent'], 2) ?>%</div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-body">
-        <h5>Project Overview</h5>
+        <h5>ภาพรวมโครงการ</h5>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Project</th>
-                    <th>Status</th>
-                    <th>Budget Used (%)</th>
+                    <th>โครงการ</th>
+                    <th>สถานะ</th>
+                    <th>ใช้งบ (%)</th>
                 </tr>
                 </thead>
                 <tbody>

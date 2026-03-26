@@ -52,10 +52,31 @@ final class Project extends BaseModel
         return (int) $this->db->lastInsertId();
     }
 
+    public function nextCodeForPlan(int $planId, int $fiscalYear, string $planCode): string
+    {
+        $stmt = $this->db->prepare('SELECT code FROM projects WHERE plan_id = :plan_id ORDER BY id ASC');
+        $stmt->execute(['plan_id' => $planId]);
+
+        $maxSeq = 0;
+        foreach ($stmt->fetchAll() as $row) {
+            if (preg_match('/(\d{3})$/', (string) $row['code'], $matches)) {
+                $seq = (int) $matches[1];
+                if ($seq > $maxSeq) {
+                    $maxSeq = $seq;
+                }
+            }
+        }
+
+        $nextSeq = $maxSeq + 1;
+
+        return sprintf('%d%s%03d', $fiscalYear, strtoupper(trim($planCode)), $nextSeq);
+    }
+
     public function update(int $id, array $payload): bool
     {
         $sql = 'UPDATE projects
                 SET plan_id = :plan_id,
+                    fiscal_year_id = :fiscal_year_id,
                     name = :name,
                     description = :description,
                     allocated_budget = :allocated_budget,
@@ -68,6 +89,7 @@ final class Project extends BaseModel
         return $stmt->execute([
             'id' => $id,
             'plan_id' => $payload['plan_id'],
+            'fiscal_year_id' => $payload['fiscal_year_id'],
             'name' => $payload['name'],
             'description' => $payload['description'] ?? null,
             'allocated_budget' => $payload['allocated_budget'],

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Helpers\Auth;
 use App\Helpers\Response;
 use App\Helpers\Validator;
 use App\Models\Kpi;
@@ -21,11 +22,13 @@ final class KpiController
     {
         $projectId = (int) ($_GET['project_id'] ?? 0);
         $kpis = $projectId > 0 ? $this->kpiModel->listByProject($projectId) : [];
+        $canManage = Auth::hasRole(['ADMIN']);
 
         Response::view('kpis/index', [
             'title' => 'KPIs',
             'kpis' => $kpis,
             'projectId' => $projectId,
+            'canManage' => $canManage,
         ]);
     }
 

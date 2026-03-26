@@ -13,6 +13,7 @@ return [
     ['method' => 'GET', 'path' => '/dashboard', 'handler' => 'DashboardController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF', 'EXECUTIVE']],
 
     ['method' => 'GET', 'path' => '/projects', 'handler' => 'ProjectController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF']],
+    ['method' => 'GET', 'path' => '/projects/{id}', 'handler' => 'ProjectController@show', 'auth' => true, 'roles' => ['ADMIN', 'STAFF']],
     ['method' => 'POST', 'path' => '/projects', 'handler' => 'ProjectController@store', 'auth' => true, 'roles' => ['ADMIN']],
     ['method' => 'POST', 'path' => '/projects/{id}/update', 'handler' => 'ProjectController@update', 'auth' => true, 'roles' => ['ADMIN']],
     ['method' => 'POST', 'path' => '/projects/{id}/delete', 'handler' => 'ProjectController@destroy', 'auth' => true, 'roles' => ['ADMIN']],
@@ -20,6 +21,8 @@ return [
     ['method' => 'GET', 'path' => '/plans', 'handler' => 'PlanController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF', 'EXECUTIVE']],
     ['method' => 'GET', 'path' => '/plans/create', 'handler' => 'PlanController@create', 'auth' => true, 'roles' => ['ADMIN']],
     ['method' => 'POST', 'path' => '/plans', 'handler' => 'PlanController@store', 'auth' => true, 'roles' => ['ADMIN']],
+    ['method' => 'POST', 'path' => '/plans/{id}/update', 'handler' => 'PlanController@update', 'auth' => true, 'roles' => ['ADMIN']],
+    ['method' => 'POST', 'path' => '/plans/{id}/delete', 'handler' => 'PlanController@destroy', 'auth' => true, 'roles' => ['ADMIN']],
 
     ['method' => 'GET', 'path' => '/kpis', 'handler' => 'KpiController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF']],
     ['method' => 'POST', 'path' => '/kpis', 'handler' => 'KpiController@store', 'auth' => true, 'roles' => ['ADMIN']],

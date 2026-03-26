@@ -20,15 +20,17 @@ final class PlanController
 
     public function index(): void
     {
-        $this->renderPage(false);
+        $canManage = Auth::hasRole(['ADMIN']);
+        $this->renderPage(false, $canManage);
     }
 
     public function create(): void
     {
-        $this->renderPage(Auth::hasRole(['ADMIN']));
+        $canManage = Auth::hasRole(['ADMIN']);
+        $this->renderPage($canManage, $canManage);
     }
 
-    private function renderPage(bool $canCreate): void
+    private function renderPage(bool $canCreate, bool $canManage): void
     {
         $fiscalYears = $canCreate ? $this->planModel->fiscalYears() : [];
         $selectedFiscalYearId = $canCreate ? (int) ($_GET['fiscal_year_id'] ?? 0) : 0;
@@ -51,6 +53,7 @@ final class PlanController
             'errorMessage' => $canCreate ? ($_GET['error'] ?? null) : null,
             'old' => [],
             'canCreate' => $canCreate,
+            'canManage' => $canManage,
         ]);
     }
 
@@ -78,6 +81,8 @@ final class PlanController
                 'previewCode' => $input['fiscal_year_id'] > 0 ? $this->planModel->nextCodeByFiscalYear($input['fiscal_year_id']) : null,
                 'errorMessage' => implode(' ', $errors),
                 'old' => $input,
+                'canCreate' => true,
+                'canManage' => true,
             ]);
             return;
         }
@@ -95,7 +100,32 @@ final class PlanController
                 'previewCode' => $input['fiscal_year_id'] > 0 ? $this->planModel->nextCodeByFiscalYear($input['fiscal_year_id']) : null,
                 'errorMessage' => $throwable->getMessage(),
                 'old' => $input,
+                'canCreate' => true,
+                'canManage' => true,
             ]);
         }
+    }
+
+    public function update(string $id): void
+    {
+        $input = [
+            'name' => trim((string) ($_POST['name'] ?? '')),
+            'description' => trim((string) ($_POST['description'] ?? '')),
+            'owner_department' => trim((string) ($_POST['owner_department'] ?? '')),
+        ];
+
+        $errors = Validator::required($input, ['name']);
+        if ($errors !== []) {
+            Response::json(['errors' => $errors], 422);
+        }
+
+        $updated = $this->planModel->update((int) $id, $input);
+        Response::json(['updated' => $updated]);
+    }
+
+    public function destroy(string $id): void
+    {
+        $deleted = $this->planModel->delete((int) $id);
+        Response::json(['deleted' => $deleted]);
     }
 }
