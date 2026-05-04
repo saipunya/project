@@ -30,6 +30,21 @@ final class User extends BaseModel
         return $row ?: null;
     }
 
+    public function findById(int $id): ?array
+    {
+        $sql = 'SELECT u.*, r.name AS role_name
+                FROM users u
+                INNER JOIN roles r ON r.id = u.role_id
+                WHERE u.id = :id
+                LIMIT 1';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+
+        return $row ?: null;
+    }
+
     public function touchLastLogin(int $userId): void
     {
         $stmt = $this->db->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');

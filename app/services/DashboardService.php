@@ -73,4 +73,42 @@ final class DashboardService
             'projects' => $projectSummaries,
         ];
     }
+
+    public function publicSummary(): array
+    {
+        $pdo = Database::connection();
+
+        $totalStmt = $pdo->query('SELECT COUNT(*) AS total FROM projects');
+        $totalProjects = (int) $totalStmt->fetch()['total'];
+
+        $statusStmt = $pdo->prepare('SELECT project_status, COUNT(*) AS total
+                                     FROM projects
+                                     GROUP BY project_status');
+        $statusStmt->execute();
+
+        $budgetStmt = $pdo->query('SELECT COALESCE(SUM(allocated_budget), 0) AS total_allocated,
+                                         COALESCE(SUM(mbu.expense_amount), 0) AS total_used
+                                  FROM projects p
+                                  LEFT JOIN monthly_budget_usage mbu ON mbu.project_id = p.id');
+
+        $projectStmt = $pdo->query('SELECT id, name, project_status, allocated_budget
+                                    FROM projects
+                                    ORDER BY updated_at DESC
+                                    LIMIT 10');
+
+        $kpiStmt = $pdo->query('SELECT COUNT(*) AS total FROM kpis');
+        $totalKpis = (int) $kpiStmt->fetch()['total'];
+
+        $kpiService = new KpiService();
+        $kpiAchievement = $kpiService->aggregateAchievementPercent(0);
+
+        return [
+            'total_projects' => $totalProjects,
+            'total_kpis' => $totalKpis,
+            'kpi_achievement' => $kpiAchievement,
+            'status_breakdown' => $statusStmt->fetchAll(),
+            'budget' => $budgetStmt->fetch() ?: ['total_allocated' => 0, 'total_used' => 0],
+            'recent_projects' => $projectStmt->fetchAll(),
+        ];
+    }
 }

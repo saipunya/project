@@ -97,7 +97,7 @@ final class AuthController
             return;
         }
 
-        Response::redirect('/dashboard');
+        Response::redirect('/profile');
     }
 
     public function logout(): void

@@ -6,13 +6,17 @@ $selectedMonth = (int) ($month ?? ($report['month'] ?? 0));
 $selectedYear = (int) ($year ?? ($report['year'] ?? 0));
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>รายงานงบประมาณ</h3>
+<div class="container mt-4">
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-8">
+            <h1 class="display-6 fw-bold">รายงานงบประมาณ</h1>
+            <p class="text-muted mb-0">บันทึกรายการใช้งบประมาณประจำเดือนของโครงการ</p>
+        </div>
     </div>
 
-<div class="card">
-    <div class="card-body">
-        <form method="POST" action="/budget-reports" class="row g-3">
+    <div class="card bg-panel">
+        <div class="card-body">
+            <form method="POST" action="/budget-reports" class="row g-3">
             <div class="col-md-4">
                 <label class="form-label">โครงการ</label>
                 <select class="form-select" name="project_id" required>

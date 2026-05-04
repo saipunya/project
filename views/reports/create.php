@@ -16,15 +16,28 @@ foreach (($reportData['activity_updates'] ?? []) as $row) {
 }
 
 $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/reports';
+
+$thaiMonths = [
+    1 => 'มกราคม', 2 => 'กุมภาพันธ์', 3 => 'มีนาคม', 4 => 'เมษายน',
+    5 => 'พฤษภาคม', 6 => 'มิถุนายน', 7 => 'กรกฎาคม', 8 => 'สิงหาคม',
+    9 => 'กันยายน', 10 => 'ตุลาคม', 11 => 'พฤศจิกายน', 12 => 'ธันวาคม'
+];
+
+$currentYear = (int) date('Y') + 543;
+$yearOptions = [$currentYear - 1, $currentYear, $currentYear + 1];
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3><?= $isEdit ? 'แก้ไขรายงานประจำเดือน' : 'ส่งรายงานประจำเดือน' ?></h3>
-</div>
+<div class="container mt-4">
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-8">
+            <h1 class="display-6 fw-bold"><?= $isEdit ? 'แก้ไขรายงานประจำเดือน' : 'ส่งรายงานประจำเดือน' ?></h1>
+            <p class="text-muted mb-0">กรอกข้อมูลความคืบหน้า KPI และกิจกรรมสำหรับโครงการที่เลือก</p>
+        </div>
+    </div>
 
-<div class="card">
-    <div class="card-body">
-        <form method="POST" action="<?= htmlspecialchars($actionUrl, ENT_QUOTES, 'UTF-8') ?>" enctype="multipart/form-data" class="row g-3">
+    <div class="card bg-panel">
+        <div class="card-body">
+            <form method="POST" action="<?= htmlspecialchars($actionUrl, ENT_QUOTES, 'UTF-8') ?>" enctype="multipart/form-data" class="row g-3">
             <div class="col-md-4">
                 <select class="form-select" name="project_id" id="project_select" required <?= $isEdit ? 'disabled' : '' ?>>
                     <option value="">เลือกโครงการ</option>
@@ -40,8 +53,32 @@ $actionUrl = $isEdit ? '/reports/' . (int) ($report['id'] ?? 0) . '/update' : '/
                     <input type="hidden" name="project_id" value="<?= htmlspecialchars((string) $projectId, ENT_QUOTES, 'UTF-8') ?>">
                 <?php endif; ?>
             </div>
-            <div class="col-md-2"><input class="form-control" type="number" min="1" max="12" name="month" placeholder="เดือน" value="<?= htmlspecialchars((string) ($report['month'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required <?= $isEdit ? 'readonly' : '' ?>></div>
-            <div class="col-md-2"><input class="form-control" type="number" name="year" placeholder="ปี" value="<?= htmlspecialchars((string) ($report['year'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required <?= $isEdit ? 'readonly' : '' ?>></div>
+            <div class="col-md-3">
+                <select class="form-select" name="month" required <?= $isEdit ? 'disabled' : '' ?>>
+                    <option value="">เลือกเดือน</option>
+                    <?php foreach ($thaiMonths as $num => $name): ?>
+                        <option value="<?= $num ?>" <?= ($report['month'] ?? '') == $num ? 'selected' : '' ?>>
+                            <?= $name ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if ($isEdit): ?>
+                    <input type="hidden" name="month" value="<?= htmlspecialchars((string) ($report['month'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <?php endif; ?>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="year" required <?= $isEdit ? 'disabled' : '' ?>>
+                    <option value="">เลือกปี</option>
+                    <?php foreach ($yearOptions as $year): ?>
+                        <option value="<?= $year ?>" <?= ($report['year'] ?? '') == $year ? 'selected' : '' ?>>
+                            <?= $year ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if ($isEdit): ?>
+                    <input type="hidden" name="year" value="<?= htmlspecialchars((string) ($report['year'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <?php endif; ?>
+            </div>
 
             <?php if (!$isEdit && $projectId === 0): ?>
                 <div class="col-12">

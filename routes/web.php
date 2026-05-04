@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 return [
-    ['method' => 'GET', 'path' => '/', 'handler' => 'DashboardController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF', 'EXECUTIVE']],
+    ['method' => 'GET', 'path' => '/', 'handler' => 'LandingController@index', 'auth' => false],
+    ['method' => 'GET', 'path' => '/dashboard', 'handler' => 'DashboardController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF', 'EXECUTIVE']],
     ['method' => 'GET', 'path' => '/register', 'handler' => 'AuthController@showRegister', 'auth' => false],
     ['method' => 'POST', 'path' => '/register', 'handler' => 'AuthController@register', 'auth' => false],
     ['method' => 'GET', 'path' => '/login', 'handler' => 'AuthController@showLogin', 'auth' => false],
@@ -11,6 +12,8 @@ return [
     ['method' => 'POST', 'path' => '/logout', 'handler' => 'AuthController@logout', 'auth' => true],
 
     ['method' => 'GET', 'path' => '/dashboard', 'handler' => 'DashboardController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF', 'EXECUTIVE']],
+    ['method' => 'GET', 'path' => '/profile', 'handler' => 'ProfileController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF', 'EXECUTIVE']],
+    ['method' => 'GET', 'path' => '/summary', 'handler' => 'SummaryController@index', 'auth' => false],
 
     ['method' => 'GET', 'path' => '/projects', 'handler' => 'ProjectController@index', 'auth' => true, 'roles' => ['ADMIN', 'STAFF']],
     ['method' => 'GET', 'path' => '/projects/{id}', 'handler' => 'ProjectController@show', 'auth' => true, 'roles' => ['ADMIN', 'STAFF']],

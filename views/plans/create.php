@@ -4,9 +4,13 @@ $canCreate = $canCreate ?? false;
 $canManage = $canManage ?? false;
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3><?= $canCreate ? 'สร้างแผน' : 'แผนทั้งหมด' ?></h3>
-</div>
+<div class="container mt-4">
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-8">
+            <h1 class="display-6 fw-bold"><?= $canCreate ? 'สร้างแผน' : 'แผนทั้งหมด' ?></h1>
+            <p class="text-muted mb-0">จัดการแผนงานและข้อมูลภาพรวมของปีงบประมาณ</p>
+        </div>
+    </div>
 
 <?php if (!empty($createdCode)): ?>
     <div class="alert alert-success">
@@ -21,7 +25,7 @@ $canManage = $canManage ?? false;
 <?php endif; ?>
 
 <?php if ($canCreate): ?>
-    <div class="card mb-4">
+    <div class="card mb-4 bg-panel">
         <div class="card-body">
             <form method="POST" action="/plans" class="row g-3">
                 <div class="col-md-3">

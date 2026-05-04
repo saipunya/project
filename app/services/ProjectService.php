@@ -67,4 +67,15 @@ final class ProjectService
             'remaining_budget' => $allocated - $used,
         ];
     }
+
+    public function getProjectSummaries()
+    {
+        $db = Database::connection();
+        $query = "SELECT name, project_status AS status, start_date, end_date FROM projects";
+        $result = $db->query($query);
+
+        $summaries = $result->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $summaries;
+    }
 }
